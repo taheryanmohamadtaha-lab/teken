@@ -12,9 +12,11 @@ jobs:
       - run: |
           mkdir www && cp index.html style.css game.js sprites.js sw.js www/ && cp -r assets www/
           npm init -y
-          npm i @capacitor/core@6 @capacitor/cli@6 @capacitor/android@6
+          npm i @capacitor/core@6 @capacitor/cli@6 @capacitor/android@6 @capacitor/app@6
           npx cap init "Iran vs India" com.legends.iranindia --web-dir www
+          node -e "const f='capacitor.config.json',c=JSON.parse(require('fs').readFileSync(f));c.backgroundColor='#000000';require('fs').writeFileSync(f,JSON.stringify(c,null,2))"
           npx cap add android
+          sed -i 's#<item name="windowNoTitle">true</item>#&<item name="android:windowFullscreen">true</item><item name="android:windowBackground">@android:color/black</item><item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>#' android/app/src/main/res/values/styles.xml
           npx cap sync
           sed -i '0,/<activity/s//<activity android:screenOrientation="sensorLandscape"/' android/app/src/main/AndroidManifest.xml
           cd android && chmod +x gradlew && ./gradlew assembleDebug
