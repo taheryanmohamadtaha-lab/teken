@@ -5,7 +5,12 @@ let S={mode:1,c:0,st:0,d:1,snd:1,w:0,l:0,best:0};
 try{Object.assign(S,JSON.parse(localStorage.ivi||'{}'))}catch(e){}
 const save=()=>{try{localStorage.ivi=JSON.stringify(S)}catch(e){}};
 const CH=[{n:'آرمان',sk:'#e9b98d',top:'#f6f6f6',pt:'#23232e',bt:'#d41',sh:'#d22',bd:'#d22',fx:'#4af',hair:'#111',beard:1},
-{n:'آگنی',sk:'#c88a58',top:'#d3171e',pt:'#f1dcae',bt:'#d3171e',sh:'#c88a58',bd:'#d3171e',fx:'#f80',hair:'#111',beard:0}];
+{n:'آگنی',sk:'#c88a58',top:'#d3171e',pt:'#f1dcae',bt:'#d3171e',sh:'#c88a58',bd:'#d3171e',fx:'#f80',hair:'#111',beard:0},
+{n:'گوریل جنگجو',sk:'#555',top:'#222',pt:'#c22',bt:'#fc3',sh:'#555',bd:'#c22',fx:'#4af',hair:'#111',beard:0,d:'قدرتمند و سنگین؛ ضربات ویرانگر'},
+{n:'ببر جنگجو',sk:'#e8962e',top:'#d33',pt:'#c22',bt:'#222',sh:'#e8962e',bd:'#d33',fx:'#f90',hair:'#111',beard:0,d:'چابک و تیز؛ پنجه‌های آتشین'},
+{n:'مبارز آمریکایی',sk:'#e9b98d',top:'#eee',pt:'#2a52a8',bt:'#a52',sh:'#d22',bd:'#d22',fx:'#4cf',hair:'#fc3',beard:0,d:'متعادل و سریع؛ گلوله‌ی انرژی'}];
+CH.push({n:'کماندوی آمریکایی',sk:'#e9b98d',top:'#c33',pt:'#586b3a',bt:'#a52',sh:'#222',bd:'#c33',fx:'#4af',hair:'#fc3',beard:0,d:'قدرت بدنی بالا؛ موج انرژی آبی'},{n:'مبارز تایلندی',sk:'#d9955a',top:'#c11',pt:'#c11',bt:'#fc3',sh:'#c11',bd:'#c11',fx:'#f80',hair:'#111',beard:0,d:'موای‌تای؛ ضربات زانو و لگد آتشین'});
+CH[0].d='سریع و تکنیکی؛ گوی انرژی آبی';CH[1].d='سنگین و پرقدرت؛ گوی آتشین';
 const STG=['حیاط کاخ ایرانی','معبد هندی','میدان شبانه','استادیوم بزرگ'],DF=['آسان','متوسط','سخت'];
 const AT={punch:{d:18,hit:5,r:78,dm:6,kb:5,hi:1},kick:{d:28,hit:9,r:105,dm:9,kb:9},special:{d:34,hit:14},ult:{d:60,hit:26}};
 let AC;function snd(f,d,t='square',v=.07,s=0){if(!S.snd)return;try{AC=AC||new AudioContext();const o=AC.createOscillator(),g=AC.createGain(),n=AC.currentTime;o.type=t;o.frequency.setValueAtTime(f,n);o.frequency.exponentialRampToValueAtTime(Math.max(30,f+s),n+d);g.gain.setValueAtTime(v,n);g.gain.exponentialRampToValueAtTime(.001,n+d);o.connect(g);g.connect(AC.destination);o.start();o.stop(n+d)}catch(e){}}
@@ -56,7 +61,7 @@ function endRound(){phase='end';pc=130;const a=P[0].hp/100,b=P[1].hp/100,w=a>b?0
  msg=P[0].hp<=0||P[1].hp<=0?'K.O.!':'TIME UP';mc=130;snd(70,.6,'sawtooth',.15);
  P.forEach((f,i)=>{if(i==w){f.wins++;f.s='win'}else if(w>=0||1){f.s=w<0?'idle':'lose'}});if(w<0)msg='DRAW'}
 function newRound(){P.forEach((f,i)=>{Object.assign(f,{x:i?660:300,y:GY,vx:0,vy:0,f:i?-1:1,hp:100,en:f.en*.3,s:'idle',t:0,cb:0,blk:0});});proj=[];timer=99;tf=0;phase='intro';pc=90;msg='ROUND '+rn;mc=90}
-function over(){run=0;const w=P[0].wins>=2?0:1;if(S.mode==1){w?S.l++:S.w++}save();document.body.classList.remove('play');
+function over(){run=0;const w=P[0].wins>=2?0:1;if(S.mode==1){w?S.l++:S.w++}save();document.body.classList.remove('play');if(TR){tourEnd(w);return}
  scr(`<h1>${CH[P[w].c].n} برنده شد!</h1><h2>${w?(S.mode==1?'ببخشید، دوباره تلاش کن':'بازیکن ۲'):'بازیکن ۱'}</h2><button onclick="startMatch()">مبارزه مجدد</button><button onclick="menu()">منوی اصلی</button>`)}
 function step(){if(mc>0)mc--;
  const act=phase=='fight';P[1].ai=S.mode==1;
@@ -100,11 +105,16 @@ function drawOld(f){const c=CH[f.c],s=f.s,t=f.t,ph=Math.sin(T*.28);
  X.fillStyle=c.bd;X.fillRect(hx-18,hd-9,36,6);limb(hx-17,hd-6,hx-38,hd+4+ph*6,5,c.bd);
  X.fillStyle='#fff';X.fillRect(hx+6,hd-4,7,4);X.fillStyle='#000';X.fillRect(hx+9,hd-4,3,4);limb(hx+4,hd-8,hx+15,hd-5,3,'#000');
  arm(fA);X.restore()}
-const IMG=[0,1].map(i=>{const m=new Image();if(typeof ATL!='undefined')m.src=ATL[i];return m});
+const IMG=[0,1,2,3,4,5,6].map(i=>{const m=new Image();if(typeof ATL!='undefined')m.src=ATL[i];return m});
 const BIM=(typeof BGI!='undefined'?BGI:[]).map(u=>{const m=new Image();m.src=u;return m});
 const POSE=[{idle:[1,2],walk:[3,4],run:[4,5],punch:[1,6,6,2],kick:[6,7,7,6],crouch:[9],block:[13],up:[8],down:[5],akick:[7],hit:[10],fall:[10,14],getup:[13,9],sp:[11,6],ult:[8],win:[1,2]},
 {idle:[1,2,3,2],walk:[2,3,6,3],run:[23,24,25,26,27],punch:[3,4,5,5,4,6],kick:[3,7,10,10,7],crouch:[12],block:[21],up:[8],down:[8],akick:[9],hit:[28],fall:[29,16],getup:[15,12],sp:[5,5],ult:[5],win:[1,2]}];
 function pick(f){const R=SPR[f.c],Q=POSE[f.c],s=f.s,t=f.t,cy=(a,n)=>a[(T/n|0)%a.length],pr=(a,A)=>a[Math.min(a.length-1,t/A.d*a.length|0)],o=a=>R[a];
+ if(R.idle){if(s=='special')return R.sp[0];if(s=='ult')return R.ult?R.ult[0]:R.sp[0];if(s=='punch')return pr(R.punch,AT.punch);
+  if(s=='kick')return f.y<GY?R.akick[0]:pr(R.kick,AT.kick);if(s=='hit')return R.hit[0];
+  if(s=='fall')return t<12?R.fall[0]:R.fall[1];if(s=='lose')return R.fall[1];if(s=='getup')return t<11?R.getup[0]:R.getup[1];
+  if(s=='jump')return f.vy<2?R.up[0]:R.down[0];if(s=='crouch')return R.crouch[0];if(f.blk&&f.y>=GY)return R.block[0];
+  if(s=='win')return cy(R.idle,12);if(s=='walk')return f.wd?cy(R.run,4):cy(R.walk,6);return cy(R.idle,10)}
  if(s=='special')return o(Q.sp[t<22?0:1]);if(s=='ult')return o(Q.ult[0]);
  if(s=='punch')return o(pr(Q.punch,AT.punch));
  if(s=='kick'){if(f.y<GY)return o(Q.akick[0]);return o(pr(Q.kick,AT.kick))}
@@ -117,9 +127,9 @@ function pick(f){const R=SPR[f.c],Q=POSE[f.c],s=f.s,t=f.t,cy=(a,n)=>a[(T/n|0)%a.
  if(s=='win')return o(cy(Q.win,12));
  if(s=='walk')return o(f.wd?cy(Q.run,4):cy(Q.walk,6));
  return o(cy(Q.idle,10))}
-const KS=[.9,.95];
+const KS=[.9,.95,1,1,1,1,1];
 function draw(f){const m=IMG[f.c];if(typeof SPR=='undefined'||!m.complete||!m.naturalWidth)return drawOld(f);
- const fr=pick(f),k=KS[f.c],s=f.s,wk=s=='walk'?Math.abs(Math.sin(T*.25))*5:0,br=1+Math.sin(T*.12)*.012*(s=='idle');
+ const fr=pick(f),k=KS[f.c]||1,s=f.s,wk=s=='walk'?Math.abs(Math.sin(T*.25))*5:0,br=1+Math.sin(T*.12)*.012*(s=='idle');
  X.fillStyle='#0006';X.beginPath();X.ellipse(f.x,GY+6,Math.max(20,58-(GY-f.y)/5),10,0,0,7);X.fill();
  X.save();X.translate(f.x,f.y-wk);X.scale(f.f,1);if(s=='special'||s=='ult'){X.shadowColor=CH[f.c].fx;X.shadowBlur=36}
  if(s=='hit'){X.filter='brightness(1.5)'}
@@ -145,7 +155,7 @@ function bgOld(){const m=(P[0].x+P[1].x)/2-W/2,st=S.st,th=[['#5fb8ee','#d6eefa',
  X.fillStyle=th[3];X.fillRect(-20,GY,W+40,H-GY);X.fillStyle='#0003';for(let i=-1;i<14;i++)X.fillRect(i*80-m*.35%80,GY+30,3,H);X.fillRect(0,GY+30,W,3);
  for(let i=-1;i<5;i++){const x=i*260+130-m*.35;X.fillStyle=st==2?'#222':'#0003';X.fillRect(x-8,GY-60,16,64);if(st==2){X.fillStyle='#ff8';X.beginPath();X.arc(x,GY-66,9,0,7);X.fill()}}}
 function hud(){for(let i=0;i<2;i++){const f=P[i],w=330,x=i?W-72-w:72,hw=w*f.hp/100,ew=w*.7*f.en/100;
- X.fillStyle='#000a';X.fillRect(x-3,17,w+6,26);{const fa=typeof SPR!='undefined'&&SPR[f.c].face,px=i?W-66:10;X.fillStyle=f.c?'#c33':'#27c';X.fillRect(px-3,12,62,62);if(fa&&IMG[f.c].naturalWidth)X.drawImage(IMG[f.c],fa[0],fa[1],fa[2],fa[3],px,15,56,56);X.strokeStyle='#fc2';X.lineWidth=2;X.strokeRect(px-3,12,62,62)}X.fillStyle=f.hp>30?'#3ddc2a':'#e33';X.fillRect(i?x+w-hw:x,20,hw,20);
+ X.fillStyle='#000a';X.fillRect(x-3,17,w+6,26);{let fa=typeof SPR!='undefined'&&SPR[f.c].face;if(fa&&Array.isArray(fa[0]))fa=fa[0];const px=i?W-66:10;X.fillStyle=f.c?'#c33':'#27c';X.fillRect(px-3,12,62,62);if(fa&&IMG[f.c].naturalWidth)X.drawImage(IMG[f.c],fa[0],fa[1],fa[2],fa[3],px,15,56,56);X.strokeStyle='#fc2';X.lineWidth=2;X.strokeRect(px-3,12,62,62)}X.fillStyle=f.hp>30?'#3ddc2a':'#e33';X.fillRect(i?x+w-hw:x,20,hw,20);
  X.fillStyle='#000a';X.fillRect(i?x+w-w*.7:x,46,w*.7,10);X.fillStyle=f.en>=100?'#fd3':'#2aa8ff';X.fillRect(i?x+w-ew:x,47,ew,8);
  X.fillStyle='#fff';X.font='bold 16px Tahoma';X.textAlign=i?'right':'left';X.fillText(CH[f.c].n+(S.mode==1&&i?' (AI)':''),i?x+w:x,76);
  for(let k=0;k<2;k++){X.fillStyle=k<f.wins?'#fc2':'#555';X.beginPath();X.arc(i?x+w-k*22-8:x+k*22+8,90,7,0,7);X.fill()}
@@ -156,14 +166,29 @@ function render(){X.save();X.clearRect(0,0,W,H);if(shake>.5)X.translate((Math.ra
  P.forEach(draw);proj.forEach(p=>{const c=CH[p.c].fx,g=X.createRadialGradient(p.x,p.y,2,p.x,p.y,34);g.addColorStop(0,'#fff');g.addColorStop(.4,c);g.addColorStop(1,'#0000');X.fillStyle=g;X.fillRect(p.x-60,p.y-40,120,80);X.fillStyle=c;X.globalAlpha=.4;X.fillRect(p.x-p.vx*5-(p.vx>0?0:-1),p.y-9,p.vx*5,18);X.globalAlpha=1});
  par.forEach(p=>{X.globalAlpha=Math.min(1,p.l/20);X.fillStyle=p.c;X.beginPath();X.arc(p.x,p.y,3,0,7);X.fill()});X.globalAlpha=1;X.restore();if(run)hud()}
 let last=0,acc=0;function loop(t){requestAnimationFrame(loop);acc+=Math.min(100,t-last);last=t;while(acc>=16.67){acc-=16.67;T++;if(run)step()}render()}
-function startMatch(){P=[mk(S.c,300,1),mk(1-S.c,660,-1)];S.mode==1&&(P[1].ai=1);rn=1;par=[];newRound();run=1;scr('');document.body.classList.add('play');save()}
+const OC=o=>o!=null?o:(S.o!=null&&S.o<CH.length?S.o:(S.c+1)%CH.length);
+function startMatch(o){P=[mk(S.c,300,1),mk(OC(o),660,-1)];S.mode==1&&(P[1].ai=1);rn=1;par=[];newRound();run=1;scr('');document.body.classList.add('play');save()}
 function stop(){run=0;document.body.classList.remove('play')}
 const ui=$('ui');function scr(h){ui.innerHTML=h;ui.style.display=h?'flex':'none'}
 const b=(t,f)=>`<button onclick="${f}">${t}</button>`;
 const hero=()=>typeof BIG=='undefined'?'':`<img class=hero style=left:1% src=${BIG[0]}><img class=hero style="right:1%;transform:scaleX(-1)" src=${BIG[1]}>`;
-function menu(){stop();P=[mk(S.c,300,1),mk(1-S.c,660,-1)];scr(hero()+`<h1>IRAN VS INDIA</h1><h2>LEGENDS OF FIGHT</h2>`+b('شروع بازی','S.mode=1;startMatch()')+b('انتخاب شخصیت','selc(0)')+b('مبارزه دونفره','S.mode=2;selc(1)')+b('مبارزه با هوش مصنوعی','S.mode=1;selc(1)')+b('انتخاب مرحله','selst(0)')+b('تنظیمات','sets()')+b('راهنمای بازی','help()')+`<small>برد: ${S.w} | باخت: ${S.l} | بیشترین کمبو: ${S.best}</small>`)}
-function selc(f){scr(`<h2>شخصیت خود را انتخاب کن</h2><div class=row><div class="card i"><img class=cimg src=${BIG[0]}><h3>آرمان 🇮🇷</h3>سریع و تکنیکی<br>گوی انرژی آبی<br>${b('انتخاب',`pc2(0,${f})`)}</div><div class="card h"><img class=cimg src=${BIG[1]}><h3>آگنی 🇮🇳</h3>سنگین و قدرتمند<br>گوی آتشین<br>${b('انتخاب',`pc2(1,${f})`)}</div></div>`)}
-function pc2(i,f){S.c=i;save();f?selst(1):menu()}
+function menu(){stop();P=[mk(S.c,300,1),mk(OC(),660,-1)];scr(hero()+`<h1>IRAN VS INDIA</h1><h2>LEGENDS OF FIGHT</h2>`+b('شروع بازی','S.mode=1;startMatch()')+b('انتخاب شخصیت','selc(0)')+b('🏆 تورنمنت','S.mode=1;selc(2)')+b('مبارزه دونفره','S.mode=2;selc(1)')+b('مبارزه با هوش مصنوعی','S.mode=1;selc(1)')+b('انتخاب مرحله','selst(0)')+b('تنظیمات','sets()')+b('راهنمای بازی','help()')+`<small>برد: ${S.w} | باخت: ${S.l} | بیشترین کمبو: ${S.best}</small>`)}
+function selc(f,o){const t=o?'حریف را انتخاب کن':f==2?'برای تورنمنت مبارز خود را انتخاب کن':'شخصیت خود را انتخاب کن';
+ scr(`<h2>${t}</h2><div class=row>`+CH.map((c,i)=>`<div class="card ${i%2?'h':'i'}"><canvas class=cimg id=cv${i} width=150 height=200></canvas><h3>${c.n}</h3><small>${c.d}</small>${b('انتخاب',o?`po(${i},${f})`:`pc2(${i},${f})`)}</div>`).join('')+'</div>'+b('بازگشت','menu()'));
+ CH.forEach((c,i)=>{const cv=document.getElementById('cv'+i),x=cv.getContext('2d'),m=IMG[i];const go=()=>{const R=SPR[i],fr=R.idle?R.idle[0]:R[POSE[i].idle[0]],k=Math.min(180/fr[3],140/fr[2]);x.clearRect(0,0,150,200);x.drawImage(m,fr[0],fr[1],fr[2],fr[3],75-fr[4]*k,192-fr[3]*k,fr[2]*k,fr[3]*k)};m.complete&&m.naturalWidth?go():m.addEventListener('load',go)})}
+function pc2(i,f){S.c=i;save();f==2?tstart():f?selc(1,1):menu()}
+function po(i,f){S.o=i;save();selst(1)}
+let TR=null;
+function tstart(){const sl=[{c:S.c,p:1}];for(let i=0;i<7;i++)sl.push({c:rnd(CH.length),p:0});
+ for(let i=7;i>0;i--){const j=rnd(i+1);[sl[i],sl[j]]=[sl[j],sl[i]]}TR={r:0,R:[sl]};tshow()}
+const pidx=()=>TR.R[TR.r].findIndex(s=>s.p);
+function tshow(msg){const nm=['ربع نهایی','نیمه‌نهایی','فینال'],col=TR.R.map((rd,k)=>`<div class=tc><b>${['۸ نفر','۴ نفر','فینالیست‌ها','قهرمان'][k]}</b>`+rd.map(s=>`<div class="${s.p?'me':''}">${CH[s.c].n}${s.p?' ⭐':''}</div>`).join('')+'</div>').join(''),opp=TR.R[TR.r][pidx()^1];
+ scr(`<h2>🏆 ${msg||nm[TR.r]}</h2><div class=row>${col}</div><p>حریف بعدی: <b>${CH[opp.c].n}</b></p>`+b('شروع مبارزه','tmatch()')+b('خروج از تورنمنت','TR=null;menu()'))}
+function tmatch(){S.st=rnd(4);S.mode=1;startMatch(TR.R[TR.r][pidx()^1].c)}
+function tourEnd(w){if(w){TR=null;scr(`<h1>حذف شدی!</h1><h2>این بار شانس با تو یار نبود</h2>`+b('تورنمنت جدید','selc(2)')+b('منوی اصلی','menu()'));return}
+ const cur=TR.R[TR.r],nx=[];for(let k=0;k<cur.length;k+=2){const a=cur[k],c=cur[k+1];nx.push(a.p?a:c.p?c:Math.random()<.5?a:c)}
+ TR.R.push(nx);TR.r++;if(nx.length==1){TR=null;scr(`<h1>🏆 قهرمان تورنمنت!</h1><h2>${CH[S.c].n} همه را شکست داد</h2>`+b('تورنمنت جدید','selc(2)')+b('منوی اصلی','menu()'));return}
+ tshow('پیروز شدی! مرحله بعد')}
 function selst(f){scr(`<h2>مرحله</h2>`+STG.map((n,i)=>b((S.st==i?'✔ ':'')+n,`S.st=${i};save();${f?'startMatch()':'menu()'}`)).join('')+b('بازگشت','menu()'))}
 function sets(){scr(`<h2>تنظیمات</h2>`+b('صدا: '+(S.snd?'روشن':'خاموش'),'S.snd^=1;save();sets()')+b('سطح هوش مصنوعی: '+DF[S.d],'S.d=(S.d+1)%3;save();sets()')+b('پاک کردن رکوردها','S.w=S.l=S.best=0;save();sets()')+b('بازگشت','menu()'))}
 function help(){scr(`<h2>راهنما</h2><div dir=rtl style="max-width:560px;font-size:14px;line-height:1.9">بازیکن ۱: A/D حرکت، W پرش، S نشستن و دفاع، J مشت، K لگد، L قدرت ویژه<br>بازیکن ۲: جهت‌ها، NumPad 1 مشت، 2 لگد، 3 قدرت ویژه<br>موبایل: دکمه‌های لمسی پایین صفحه (چند لمسی)<br>نگه‌داشتن جهت عقب = دفاع؛ نشستن از مشت جاخالی می‌دهد و گوی انرژی را رد می‌کند.<br>قدرت ویژه ۳۰ انرژی می‌خواهد؛ با انرژی ۱۰۰ قدرت نهایی اجرا می‌شود.<br>برنده کسی است که دو راند ببرد.</div>`+b('بازگشت','menu()'))}

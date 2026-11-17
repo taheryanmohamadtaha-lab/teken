@@ -14,3 +14,4 @@ button:active{transform:scale(.96)}.row{display:flex;gap:10px;flex-wrap:wrap;jus
 @media(pointer:coarse){.play #tc{display:flex}}.play #pz{display:block}
 
 .hero{position:absolute;bottom:0;height:80%;pointer-events:none;filter:drop-shadow(0 0 12px #000)}.cimg{height:30vh;max-height:260px;display:block;margin:0 auto 6px}.card{max-width:260px}#ui>*:not(.hero){position:relative;z-index:1}
+.tc{display:flex;flex-direction:column;gap:4px;min-width:90px;font-size:13px}.tc div{background:#fff2;border-radius:6px;padding:3px 8px}.tc .me{background:#fc2;color:#000;font-weight:700}.card small{display:block;margin-bottom:6px;opacity:.85}.cimg{width:100px;height:134px}
