@@ -133,7 +133,7 @@ function draw(f){const m=IMG[f.c];if(typeof SPR=='undefined'||!m.complete||!m.na
  X.fillStyle='#0006';X.beginPath();X.ellipse(f.x,GY+6,Math.max(20,58-(GY-f.y)/5),10,0,0,7);X.fill();
  X.save();X.translate(f.x,f.y-wk);X.scale(f.f,1);if(s=='special'||s=='ult'){X.shadowColor=CH[f.c].fx;X.shadowBlur=36}
  if(s=='hit'){X.filter='brightness(1.5)'}
- X.scale(1,br);X.imageSmoothingQuality='high';X.drawImage(m,fr[0],fr[1],fr[2],fr[3],-fr[4]*k,-fr[3]*k,fr[2]*k,fr[3]*k);X.restore()}
+ X.scale(1,br);if(fr[6])X.scale(-1,1);X.imageSmoothingQuality='high';X.drawImage(m,fr[0],fr[1],fr[2],fr[3],-fr[4]*k,-fr[3]*k,fr[2]*k,fr[3]*k);X.restore()}
 function bgImg(){const i=S.st,im=BIM[i];if(!im||!im.complete||!im.naturalWidth)return 0;
  const m=(P[0].x+P[1].x)/2-W/2,sc=Math.max((W+90)/im.width,(GY+8)/im.height),dw=im.width*sc,dh=im.height*sc,dx=-(dw-W)/2-m*.06,dy=GY-dh+8;
  X.fillStyle='#223';X.fillRect(-20,-20,W+40,H+40);X.drawImage(im,dx,dy,dw,dh);
@@ -172,7 +172,11 @@ function stop(){run=0;document.body.classList.remove('play')}
 const ui=$('ui');function scr(h){ui.innerHTML=h;ui.style.display=h?'flex':'none'}
 const b=(t,f)=>`<button onclick="${f}">${t}</button>`;
 const hero=()=>typeof BIG=='undefined'?'':`<img class=hero style=left:1% src=${BIG[0]}><img class=hero style="right:1%;transform:scaleX(-1)" src=${BIG[1]}>`;
-function menu(){stop();P=[mk(S.c,300,1),mk(OC(),660,-1)];scr(hero()+`<h1>IRAN VS INDIA</h1><h2>LEGENDS OF FIGHT</h2>`+b('شروع بازی','S.mode=1;startMatch()')+b('انتخاب شخصیت','selc(0)')+b('🏆 تورنمنت','S.mode=1;selc(2)')+b('مبارزه دونفره','S.mode=2;selc(1)')+b('مبارزه با هوش مصنوعی','S.mode=1;selc(1)')+b('انتخاب مرحله','selst(0)')+b('تنظیمات','sets()')+b('راهنمای بازی','help()')+`<small>برد: ${S.w} | باخت: ${S.l} | بیشترین کمبو: ${S.best}</small>`)}
+function quit(){try{const A=window.Capacitor&&Capacitor.Plugins&&Capacitor.Plugins.App;if(A&&A.exitApp){A.exitApp();return}}catch(e){}
+ try{window.close()}catch(e){}
+ scr('<h1>بازی بسته شد</h1><h2>می‌توانی این صفحه را ببندی</h2>'+b('بازگشت به منو','menu()'))}
+const cred=()=>`<div class=cr>${typeof CRIMG!='undefined'?`<img src="${CRIMG}">`:''}<span>سازنده: محمد طاها طاهریان</span></div>`;
+function menu(){stop();P=[mk(S.c,300,1),mk(OC(),660,-1)];scr(hero()+`<h1>IRAN VS INDIA</h1><h2>LEGENDS OF FIGHT</h2><div class=menu>`+b('شروع بازی','S.mode=1;startMatch()')+b('🏆 تورنمنت','S.mode=1;selc(2)')+b('مبارزه با هوش مصنوعی','S.mode=1;selc(1)')+b('مبارزه دونفره','S.mode=2;selc(1)')+b('انتخاب شخصیت','selc(0)')+b('انتخاب مرحله','selst(0)')+b('تنظیمات','sets()')+b('راهنمای بازی','help()')+b('خروج از بازی','quit()')+`</div><small>برد: ${S.w} | باخت: ${S.l} | بیشترین کمبو: ${S.best}</small>`+cred())}
 function selc(f,o){const t=o?'حریف را انتخاب کن':f==2?'برای تورنمنت مبارز خود را انتخاب کن':'شخصیت خود را انتخاب کن';
  scr(`<h2>${t}</h2><div class=row>`+CH.map((c,i)=>`<div class="card ${i%2?'h':'i'}"><canvas class=cimg id=cv${i} width=150 height=200></canvas><h3>${c.n}</h3><small>${c.d}</small>${b('انتخاب',o?`po(${i},${f})`:`pc2(${i},${f})`)}</div>`).join('')+'</div>'+b('بازگشت','menu()'));
  CH.forEach((c,i)=>{const cv=document.getElementById('cv'+i),x=cv.getContext('2d'),m=IMG[i];const go=()=>{const R=SPR[i],fr=R.idle?R.idle[0]:R[POSE[i].idle[0]],k=Math.min(180/fr[3],140/fr[2]);x.clearRect(0,0,150,200);x.drawImage(m,fr[0],fr[1],fr[2],fr[3],75-fr[4]*k,192-fr[3]*k,fr[2]*k,fr[3]*k)};m.complete&&m.naturalWidth?go():m.addEventListener('load',go)})}
